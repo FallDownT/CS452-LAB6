@@ -1,0 +1,75 @@
+Chris Schwarz
+Pseudocode for Lab 6
+
+Each of the five steps for Lab 6 may be accomplished separately.
+
+1.) To create a plane:
+ -Create an array of vertices for the plane
+ -Create an array of elements for the plane
+ -Create a vertex shader that takes an "in vec4 in_position" and sets it to gl_Position
+ -Create a fragment shader with a main function, but nothing in it
+ -Initialize the shaders and create a program
+ -Using the program, generate and bind a vao (let's call it vao1)
+ -Generate and bind a vbo
+ -Generate and populate a buffer with the vertex array
+ -Bind vertex array as an attribute to vao1
+ -Enable the vertex attribute at position index for vao1
+ -Generate and bind an elements array buffer for vao1
+ -Draw elements array of the plane
+ -Release binding to vao1
+
+
+2.) To create a polyhedron on the plane:
+ -Add the vertices of the polyhedron to the vertex array
+ -Add the elements of the polyhedron to the elements array
+ -Using the program, generate and bind a new vao (let's call it vao2)
+ -Use the same vbo as vao1
+ -Bind vertex array as an attribute to vao2 offsetting past vao1's indices
+ -Enable the vertex attribute at position index for vao2
+ -Generate and bind an elements array buffer for vao2 offsetting past vao1's indices
+ -Draw elements array of the polyhedron
+ -Release binding to vao2
+
+
+3.) To create a light:
+ -In the vertex shader:
+  -Add a "normals" in attribute as a vec3 array
+  -Add a light position uniform vec4
+  -Create fN, fE, and fL out vec3's
+  -Set fN to in normals vec3
+  -Set fE to in position vec3 (times a ModelView matrix if you have one)
+  -Set fL to the light position
+ -In the fragment shader:
+  -Add fN, fE, fL as in variables and normalize them in main
+  -Add uniform variables for ambient, diffuse, and specular products as well as shininess
+  -Add out vec4 for output color
+  -Add ambient, diffuse, and specular light derived from inputs and set to out color
+ -In cpp file:
+  -Create normals array, and add it as a sub-buffer to the vbo
+  -Bind normals array to each vao as an attribute, and enable the normals attribute
+  -Define all materials and light properties
+  -Bind uniform variables of ambient product, diffuse product, and specular product to program
+
+
+4.) To create a shadow cast by the object:
+ -Render the shadow map
+ -Render the target
+ -If ModelView matrix and Projection matrix are used in shaders, create and bind them
+ -Create a depth texture
+ -Update the frame buffer (or swap buffers)
+ -Compute ModelView and Projection matrices for each light from the light's perspective
+ -Bind these computed values to the program
+
+
+5.) To create camera controls that spin around the cube:
+ -Assume that this program uses freeGLUT
+ -If there was previously no model or view matrices, create and compute them
+  -One model matrix per vao and one view matrix total
+ -View matrix is computed using glLookAt function:
+  -"at" coordinate at (0.0,0.0,0.0)
+  -"eye" coordinate at (0.0,0.0,1.0) and must be modifiable
+  -"up" coordinate at (0.0,1.0,0.0) and must be modifiable
+ -Add an input handling function to the main loop
+ -Add a switch case to listen for keyboard events
+ -Upon pressing designated keys, the eye (and sometimes the up) variable's coordinates must change
+  -Transforming from cartesian to spherical coordinates improves the smoothness of transformations
